@@ -7,8 +7,7 @@ import os
 import magic
 
 
-
-class TextCensor():
+class TextCensor:
     """
     A class to encapsulate functionality needed to censor a text file
 
@@ -43,9 +42,9 @@ class TextCensor():
         banned_words_filepath : str
             filepath of the text file containing the words to be censored
         """
-        self.banned_words_filepath = banned_words_filepath
+        self.validate_filepath(banned_words_filepath)
 
-        self.validate_filepath(self.banned_words_filepath)
+        self.banned_words_filepath = banned_words_filepath
 
     def print_censor_text(self, text_filepath):
         """
@@ -61,7 +60,7 @@ class TextCensor():
         None
         """
         self.validate_filepath(text_filepath)
-        with open(text_filepath, "r",encoding="utf-8") as text:
+        with open(text_filepath, "r", encoding="utf-8") as text:
             for line in text:
                 self.censor_line_and_print(line)
 
@@ -131,9 +130,10 @@ class TextCensor():
 
         # Check file given is a text file
         file_type = magic.from_file(filepath, mime=True)
-        if file_type != 'text/plain':
-            raise IOError(f"File provided is not a text file. File given was a {file_type} file")
-
+        if file_type != "text/plain":
+            raise IOError(
+                f"File provided is not a text file. File given was a {file_type} file"
+            )
 
 
 if __name__ == "__main__":
