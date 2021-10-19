@@ -46,7 +46,7 @@ class TextCensor:
 
         self.banned_words_filepath = banned_words_filepath
 
-    def print_censor_text(self, text_filepath):
+    def censor_text(self, text_filepath):
         """
         Prints the censored version of the text in the given text file to stdout
 
@@ -128,9 +128,10 @@ class TextCensor:
         if not os.path.exists(filepath):
             raise IOError(f"{filepath} does not exist.")
 
-        # Check file given is a text file
+        # Check file given is a text file. Note, text files may not have the .txt
+        # file extension so we have to check the file type
         file_type = magic.from_file(filepath, mime=True)
-        if file_type != "text/plain":
+        if "text" not in file_type:
             raise IOError(
                 f"File provided is not a text file. File given was a {file_type} file"
             )

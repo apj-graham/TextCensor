@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Test suite for TextCensor class"""
 
-
 import unittest
 import unittest.mock
 import io
@@ -11,11 +10,12 @@ from sensor_text import TextCensor
 class TestTextCensor(unittest.TestCase):
     """Unit Tests for the TextCensor class"""
 
+    BANNED_WORDS_FILE_PATH = "test_resources/banned_words.txt"
+
     def test_textcensor_accepts_valid_text_file(self):
         """A TextCensor instance can be created with a valid text file"""
-        filepath = "banned_words.txt"
-        censor = TextCensor(filepath)
-        self.assertEqual(filepath, censor.banned_words_filepath)
+        censor = TextCensor(self.BANNED_WORDS_FILE_PATH)
+        self.assertEqual(self.BANNED_WORDS_FILE_PATH, censor.banned_words_filepath)
 
     def test_textcensor_rejects_non_existent_file(self):
         """An IOError is raised when a non existent file is used to create a TextCensor instance"""
@@ -25,14 +25,14 @@ class TestTextCensor(unittest.TestCase):
 
     def test_textcensor_rejects_non_text_file(self):
         """An IOError is raised when a non text file is used to create a TextCensor instance"""
-        filepath = "non_text_file.png"
+        filepath = "test_resources/non_text_file.png"
         with self.assertRaises(IOError):
             TextCensor(filepath)
 
     def test_banned_words_read_correctly(self):
         """Words are read correctly from the file provided"""
-        control_words = ["fudge", "secret"]
-        censor = TextCensor("banned_words.txt")
+        control_words = ["fudge", "secret", "Mordor"]
+        censor = TextCensor(self.BANNED_WORDS_FILE_PATH)
         test_words = list(censor.get_banned_words())
 
         # Check the correct number of words was read from the file
@@ -51,10 +51,32 @@ class TestTextCensor(unittest.TestCase):
         censored_text = (
             "There are some words that one must not say such as ***** and ******\n"
         )
-        censor = TextCensor("banned_words.txt")
+        censor = TextCensor(self.BANNED_WORDS_FILE_PATH)
 
         censor.censor_line_and_print(plain_text)
         self.assertEqual(mock_stdout.getvalue(), censored_text)
+
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    def test_text_censored_correctly(self, mock_stdout):
+        """A text file has banned words replaced by an equal number of *'s"""
+        text_filepath = "test_resources/sample_text.txt"
+        # Print adds \n onto the end of returned string
+        censored_text = [
+            "Three Rings for the Elven-kings under the sky,",
+            "Seven for the Dwarf-lords in their halls of stone,",
+            "Nine for Mortal Men doomed to die,",
+            "One for the Dark Lord on his dark throne",
+            "In the Land of ****** where the Shadows lie.",
+            "One Ring to rule them all, One Ring to find them,",
+            "One Ring to bring them all and in the darkness bind them",
+            "In the Land of ****** where the Shadows lie.\n",
+        ]
+        censor = TextCensor(self.BANNED_WORDS_FILE_PATH)
+
+        censor.censor_text(text_filepath)
+        output_text = mock_stdout.getvalue().split("\n\n")
+        for output_line, censored_line in zip(output_text, censored_text):
+            self.assertEqual(output_line, censored_line)
 
 
 if __name__ == "__main__":
