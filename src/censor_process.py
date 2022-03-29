@@ -1,31 +1,52 @@
+""" Process that censors individual words"""
+
 import re
 import time
 from multiprocessing import Process
 
-from src.safe_print import safe_print
 
+class CensorProcess(Process):
+    """Process the censors anyword on the banned words list
 
-class ProcessThread(Process):
+    With multiple processes, many words can be censored in parallel
+
+    Arguments:
+        in_queue : Queue
+            FIFO buffer where words to be censored are collected from
+
+        out_queue: Queue
+            FIFO buffer where words that have been censored at put to
+
+        banned_words_filepath: str
+            Location of file containing the words to be censored
+
+        counter: Value
+            Variable shared between processes to keep track of which words
+            have already been processed
+    """
+
     # We only want to match a full word not words within words
     # e.g. "thought" contains "ought". We don't want to return
     # th***** if the banned word is ought
 
     # Also, test words are provided with the trailing character
     # (one of space, carriage return or punctuation)
-    PATTERN_TEMPLATE = "(?<!.)({})(?=\W)"
+    PATTERN_TEMPLATE = r"(?<!.)({})(?=\W)"
 
     def __init__(self, in_queue, out_queue, banned_words_filepath, counter):
-        super(ProcessThread, self).__init__()
+        super(CensorProcess, self).__init__()
         self.in_queue = in_queue
         self.out_queue = out_queue
         self.banned_words_filepath = banned_words_filepath
         self.processed_words_counter = counter
 
     def run(self):
+        """Continously check for new words and sensor any that are available"""
         while True:
             word, word_number = self.in_queue.get()
             censored_text = self.process(word)
             while not self.processed_words_counter.value == word_number - 1:
+                # Add sleep to avoid unneccesarily busy loop
                 time.sleep(0.1)
 
             with self.processed_words_counter.get_lock():

@@ -6,9 +6,9 @@ import time
 from multiprocessing import JoinableQueue, Value
 
 from src.arg_parser import parse_arguments
-from src.censor_process import ProcessThread
+from src.censor_process import CensorProcess
 from src.input_validation import validate_arguments
-from src.printer_process import PrintThread
+from src.printer_process import PrintProcess
 
 
 class TextCensor:
@@ -83,7 +83,7 @@ class TextCensor:
         None
         """
         for _ in range(os.cpu_count() - 2):
-            process = ProcessThread(
+            process = CensorProcess(
                 self.read_words,
                 self.proccessed_words,
                 self.banned_words_filepath,
@@ -93,7 +93,7 @@ class TextCensor:
             process.start()
             self.processes.append(process)
 
-        process = PrintThread(self.proccessed_words)
+        process = PrintProcess(self.proccessed_words)
         process.start()
         self.processes.append(process)
 
