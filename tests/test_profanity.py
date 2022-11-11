@@ -1,7 +1,7 @@
 
 import unittest
 
-from better_profanity import Profanity
+from better_profanity import Profanity, utils
 
 
 class TestProfanity(unittest.TestCase):
@@ -21,10 +21,10 @@ class TestProfanity(unittest.TestCase):
             Profanity(custom_bad_words)
         except Exception as e:
             self.fail(f"__init__() raised {e} unexpectedly")
-    
+
     def test_init_with_file_path(self):
         """Class initialised with iterable does not raise errors"""
-        file_path = "data/small_word_list.txt"
+        file_path = utils.get_complete_path_of_file(r"../tests/data/small_word_list.txt")
         try:
             Profanity(file_path)
         except Exception as e:
@@ -37,12 +37,12 @@ class TestProfanity(unittest.TestCase):
 
     def test_load_censor_words_file(self):
         """List of words to be censored is populated with those from the provided iterable"""
-        file_path = "data/small_word_list.txt"
+        file_path = utils.get_complete_path_of_file(r"../tests/data/small_word_list.txt")
         sut = Profanity(file_path)
 
         expected_banned_words = ["are", "some", "these", "words"]
         self.assertEqual(expected_banned_words, sut.CENSOR_WORDSET)
-    
+
     def test_load_censor_words_invalid_file(self):
         """List of words to be censored is populated with those from the provided iterable"""
         file_path = "not_a_file.txt"
@@ -55,7 +55,7 @@ class TestProfanity(unittest.TestCase):
         sut = Profanity(custom_bad_words)
 
         self.assertEqual(custom_bad_words, sut.CENSOR_WORDSET)
-    
+
     def test_load_censor_words_duplicates(self):
         """List of words to be censored is populated with those from the provided iterable"""
         custom_bad_words = ["happy", "jolly", "merry", "jolly"]
@@ -78,23 +78,24 @@ class TestProfanity(unittest.TestCase):
         expected_regex_pattern = r"\b(?:a(?:@(?:\*4?)?)?|b)\b"
 
         self.assertEqual(expected_regex_pattern, sut.censor_regex.pattern)
-    
+
     def test_hide_swear_words(self):
         """Banned words are replaced with an equal number of a given character"""
         sut = Profanity(["a", "test"])
         text = "This is a test"
-        
+        print(sut.censor_regex.pattern)
+
         expected_censored_text = "This is * ****"
         censored_text = sut._hide_swear_words(text, "*", sut.censor_regex)
 
         self.assertEqual(expected_censored_text, censored_text)
-    
+
     def test_contains_profanity(self):
         """Returns True is banned words are present, else False"""
         sut = Profanity(["a", "test"])
         profane_text = "This is a test"
         non_profane_text = "This is some text"
-        
+
         self.assertTrue(sut.contains_profanity(profane_text))
         self.assertFalse(sut.contains_profanity(non_profane_text))
 
@@ -102,17 +103,18 @@ class TestProfanity(unittest.TestCase):
         """Banned words are redacted in given text"""
         sut = Profanity(["a", "test"])
         text = "This is a test"
-        
+
         expected_text = "This is * ****"
         censored_text = sut.censor(text)
-        
+
         self.assertEqual(expected_text, censored_text)
-    
+
     def test_censor_leet_speak(self):
         """Banned words with alternative letters are redacted in given text"""
         sut = Profanity(["a", "test"])
-        text = "This is @ test"
-        
+        print(sut.censor_regex.pattern)
+        text = "This is 4 t3$7"
+
         expected_text = "This is * ****"
         censored_text = sut.censor(text)
 
@@ -145,7 +147,7 @@ class TestProfanity(unittest.TestCase):
         bad_text = "abcfoodef"
         censored_text = "abcfoodef"
         self.assertEqual(sut.censor(bad_text), censored_text)
-    
+
     def test_censor_unicode_cyrillic(self):
         """Cyrillic characters are redacted"""
         sut = Profanity(["хайль"])

@@ -69,9 +69,9 @@ if __name__ == "__main__":
     # You **** of ****.
 ```
 
-### 2. Censor doesn't care about word dividers
+### 2. Censor does care about word dividers
 
-The function `.censor()` also hide words separated not just by an empty space ` ` but also other dividers, such as `_`, `,` and `.`. Except for `@, $, *, ", '`.
+The function `.censor()` will only hide full words
 
 ```python
 from better_profanity import profanity
@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     censored_text = profanity.censor(text)
     print(censored_text)
-    # "...****...hello_cat_****,,,,123"
+    #...sh1t...hello_cat_fuck,,,,123
 ```
 
 ### 3. Censor swear words with custom character
@@ -142,25 +142,7 @@ if __name__ == "__main__":
     profanity.load_censor_words_from_file('/path/to/my/project/my_wordlist.txt')
 ```
 
-### 6. Whitelist
-
-Function `load_censor_words` and `load_censor_words_from_file` takes a keyword argument `whitelist_words` to ignore words in a wordlist.
-
-It is best used when there are only a few words that you would like to ignore in the wordlist.
-
-```python
-# Use the default wordlist
-profanity.load_censor_words(whitelist_words=['happy', 'merry'])
-
-# or with your custom words as a List
-custom_badwords = ['happy', 'jolly', 'merry']
-profanity.load_censor_words(custom_badwords, whitelist_words=['merry'])
-
-# or with your custom words as a text file
-profanity.load_censor_words_from_file('/path/to/my/project/my_wordlist.txt', whitelist_words=['merry'])
-```
-
-### 7. Add more censor words
+### 6. Add more censor words
 
 ```python
 from better_profanity import profanity
@@ -200,11 +182,6 @@ Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of cond
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Special thanks to
-
-- [Andrew Grinevich](https://github.com/Derfirm) - Add support for Unicode characters.
-- [Jaclyn Brockschmidt](https://github.com/jcbrockschmidt) - Optimize string comparison.
 
 ## Acknowledgments
 
