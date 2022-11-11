@@ -5,7 +5,7 @@ import re
 from collections.abc import Iterable
 
 from .leet_regex import LeetTrie
-from .utils import get_complete_path_of_file, read_wordlist
+from .utils import get_complete_path_of_file, read_wordlist, get_leet_combinations
 
 
 class Profanity:
@@ -48,7 +48,12 @@ class Profanity:
             self._populate_words_to_wordset(words)
 
     def _populate_words_to_wordset(self, words):
-        all_censor_words = [word.lower() for word in set(words)]
+        censor_words = [word.lower() for word in set(words)]
+        all_censor_words = []
+        for word in censor_words:
+            for leet_word in get_leet_combinations(word):
+                all_censor_words.append(leet_word)
+
         all_censor_words.sort()
         # The default wordlist takes ~5MB+ of memory
         self.CENSOR_WORDSET = all_censor_words
