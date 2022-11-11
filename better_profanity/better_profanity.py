@@ -31,10 +31,10 @@ class Profanity:
             "profanity_wordlist.txt"
         )
         self.load_censor_words(words)
-        
+
         self.censor_regex = self.construct_censor_regex()
 
-    def load_censor_words(self, source):
+    def load_censor_words(self, source=None):
         if isinstance(source, str):
             if not os.path.isfile(source):
                 raise FileNotFoundError("Path provided is not a file")
@@ -52,7 +52,7 @@ class Profanity:
         all_censor_words.sort()
         # The default wordlist takes ~5MB+ of memory
         self.CENSOR_WORDSET = all_censor_words
-    
+
     def construct_censor_regex(self):
         """Create compiled regex to match banned words"""
         trie = LeetTrie()

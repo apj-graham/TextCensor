@@ -23,10 +23,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     data_files=[
         ("wordlist", ["better_profanity/profanity_wordlist.txt"]),
-        ("unicode_characters", ["better_profanity/alphabetic_unicode.json"]),
     ],
-    package_data={
-        "better_profanity": ["profanity_wordlist.txt", "alphabetic_unicode.json"]
-    },
+    package_data={"better_profanity": ["profanity_wordlist.txt"]},
     include_package_data=True,
 )
