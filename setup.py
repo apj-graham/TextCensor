@@ -6,7 +6,7 @@ with open("README.md", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="Text Censor",
+    name="better_profanity",
     version=__version__,
     author="Aaron Graham",
     author_email="apj_graham@yahoo.co.uk",
