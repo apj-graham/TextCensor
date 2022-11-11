@@ -10,7 +10,7 @@ class TestUtils(unittest.TestCase):
         """Words are read from a file and the white space is stripped"""
         filepath = utils.get_complete_path_of_file(r"../tests/data/small_word_list.txt")
 
-        expected_words = ["these", "are", "some", "words"]
+        expected_words = ["word"]
         words = [word for word in utils.read_wordlist(filepath)]
 
         self.assertEqual(expected_words, words)

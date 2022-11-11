@@ -1,4 +1,3 @@
-
 import unittest
 
 from better_profanity import Profanity, utils
@@ -6,6 +5,9 @@ from better_profanity import Profanity, utils
 
 class TestProfanity(unittest.TestCase):
     """Test for the "Profanity" class and it's methods"""
+
+    def setUp(self):
+        self.maxDiff = None
 
     def test_init_with_defaults(self):
         """Class initialised with default values does not raise errors"""
@@ -24,7 +26,9 @@ class TestProfanity(unittest.TestCase):
 
     def test_init_with_file_path(self):
         """Class initialised with iterable does not raise errors"""
-        file_path = utils.get_complete_path_of_file(r"../tests/data/small_word_list.txt")
+        file_path = utils.get_complete_path_of_file(
+            r"../tests/data/small_word_list.txt"
+        )
         try:
             Profanity(file_path)
         except Exception as e:
@@ -37,45 +41,50 @@ class TestProfanity(unittest.TestCase):
 
     def test_load_censor_words_file(self):
         """List of words to be censored is populated with those from the provided iterable"""
-        file_path = utils.get_complete_path_of_file(r"../tests/data/small_word_list.txt")
+        file_path = utils.get_complete_path_of_file(
+            r"../tests/data/small_word_list.txt"
+        )
         sut = Profanity(file_path)
 
-        expected_banned_words = ["are", "some", "these", "words"]
+        expected_banned_words = ["w*rd", "w0rd", "w@rd", "word"]
         self.assertEqual(expected_banned_words, sut.CENSOR_WORDSET)
 
     def test_load_censor_words_invalid_file(self):
         """List of words to be censored is populated with those from the provided iterable"""
         file_path = "not_a_file.txt"
         with self.assertRaises(FileNotFoundError):
-            sut = Profanity(file_path)
+            _ = Profanity(file_path)
 
     def test_load_censor_words_iterable(self):
         """List of words to be censored is populated with those from the provided iterable"""
-        custom_bad_words = ["happy", "jolly", "merry"]
+        custom_bad_words = ["happy"]
         sut = Profanity(custom_bad_words)
 
-        self.assertEqual(custom_bad_words, sut.CENSOR_WORDSET)
+        expected_word_list = ["h*ppy", "h4ppy", "h@ppy", "happy"]
+        self.assertEqual(expected_word_list, sut.CENSOR_WORDSET)
 
     def test_load_censor_words_duplicates(self):
         """List of words to be censored is populated with those from the provided iterable"""
-        custom_bad_words = ["happy", "jolly", "merry", "jolly"]
+        custom_bad_words = ["happy", "happy"]
         sut = Profanity(custom_bad_words)
 
-        expected_banned_words = ["happy", "jolly", "merry"]
-        self.assertEqual(expected_banned_words, sut.CENSOR_WORDSET)
+        expected_word_list = ["h*ppy", "h4ppy", "h@ppy", "happy"]
+        self.assertEqual(expected_word_list, sut.CENSOR_WORDSET)
 
     def test_load_censor_words_new_words_overwrite(self):
         """Loading new words overwrites existing word list"""
-        sut = Profanity(["bar", "foo"])
-        self.assertEqual(sut.CENSOR_WORDSET, ["bar", "foo"])
+        sut = Profanity(["happy"])
+        expected_word_list = ["h*ppy", "h4ppy", "h@ppy", "happy"]
+        self.assertEqual(sut.CENSOR_WORDSET, expected_word_list)
 
-        sut.load_censor_words(["other", "words"])
-        self.assertEqual(sut.CENSOR_WORDSET, ["other", "words"])
+        sut.load_censor_words(["mod"])
+        expected_word_list = ['m*d', 'm0d', 'm@d', 'mod']
+        self.assertEqual(sut.CENSOR_WORDSET, expected_word_list)
 
     def test_construct_censor_regex(self):
         """For the given words, the regex pattern is comprised of those words(including variations)"""
         sut = Profanity(["a", "b"])
-        expected_regex_pattern = r"\b(?:a(?:@(?:\*4?)?)?|b)\b"
+        expected_regex_pattern = r"\b[\*4@ab]\b"
 
         self.assertEqual(expected_regex_pattern, sut.censor_regex.pattern)
 
@@ -161,6 +170,7 @@ class TestProfanity(unittest.TestCase):
         bad_text = "Đây là 1 câu nói bậy."
         censored_text = "Đây là 1 *** nói ***."
         self.assertEqual(sut.censor(bad_text), censored_text)
+
 
 if __name__ == "__main__":
     unittest.main()
