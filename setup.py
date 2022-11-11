@@ -6,14 +6,14 @@ with open("README.md", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="better_profanity",
+    name="Text Censor",
     version=__version__,
-    author="Son Nguyen Thanh",
-    author_email="thanhson16198@gmail.com",
+    author="Aaron Graham",
+    author_email="apj_graham@yahoo.co.uk",
     description="Blazingly fast cleaning swear words (and their leetspeak) in strings",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/snguyenthanh/better_profanity",
+    url="https://github.com/apj-graham/TextCensor",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
