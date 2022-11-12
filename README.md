@@ -1,6 +1,6 @@
-# better_profanity
+# better_profanity (Forked from https://github.com/snguyenthanh/better_profanity)
 
-*Blazingly fast cleaning swear words (and their leetspeak) in strings*
+_Blazingly fast cleaning swear words (and their leetspeak) in strings_
 
 [![release](https://img.shields.io/badge/dynamic/json.svg?label=release&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fbetter-profanity%2Fjson&query=%24.info.version&colorB=blue)](https://github.com/snguyenthanh/better_profanity/releases/latest)
 [![Build Status](https://travis-ci.com/snguyenthanh/better_profanity.svg?branch=master)](https://travis-ci.com/snguyenthanh/better_profanity)
@@ -29,7 +29,7 @@ Only Unicode characters from categories `Ll`, `Lu`, `Mc` and `Mn` are added. Mor
 
 [unicode category link]: https://en.wikipedia.org/wiki/Template:General_Category_(Unicode)
 
-Not all languages are supported yet, such as *Chinese*.
+Not all languages are supported yet, such as _Chinese_.
 
 ## Usage
 
