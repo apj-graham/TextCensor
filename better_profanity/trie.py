@@ -1,9 +1,7 @@
 import re
+from pprint import pprint
 
-from .constants import CHAR_MAP
-
-
-class LeetTrie:
+class Trie:
     """Regex::Trie in Python. Creates a Trie out of a list of words. The trie can be exported to a Regex pattern.
     The corresponding Regex should match much faster than a simple Regex union.
 
@@ -68,3 +66,16 @@ class LeetTrie:
 
     def pattern(self):
         return self._pattern(self.dump())
+
+    def _words(self, pData):
+        words = []
+        for key, value in pData.items():
+            if key != "":
+                for element in self._words(value):
+                    words.append(key + element)
+            else:
+                words.append("")
+        return words
+
+    def words(self):
+        return self._words(self.dump())

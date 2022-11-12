@@ -2,8 +2,7 @@ from better_profanity import Profanity
 
 
 def main():
-    text_censor = Profanity()
-    text_censor.construct_censor_regex()
+    text_censor = Profanity(r"/usr/share/dict/british-english")
 
     print("Saving regex to file...")
     with open(r"regex.txt", "w") as f:

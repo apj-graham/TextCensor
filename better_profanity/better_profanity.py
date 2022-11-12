@@ -4,13 +4,13 @@ import os
 import re
 from collections.abc import Iterable
 
-from .leet_regex import LeetTrie
+from .trie import Trie
 from .utils import get_complete_path_of_file, read_wordlist, get_leet_combinations
 
 
 class Profanity:
 
-    def __init__(self, words=None):
+    def __init__(self, words=None, leet_speak=False):
         """
         Args:
             words (Iterable/str): Collection of words or file path for a list of
@@ -26,7 +26,9 @@ class Profanity:
             and not isinstance(words, Iterable)
         ):
             raise TypeError("words must be of type str, list, or None")
-        self.CENSOR_WORDSET = []
+
+        self.leet = leet_speak
+        self.trie = Trie()
         self._default_wordlist_filename = get_complete_path_of_file(
             "profanity_wordlist.txt"
         )
@@ -41,28 +43,24 @@ class Profanity:
             else:
                 words = read_wordlist(source)
                 self._populate_words_to_wordset(words)
+
         elif isinstance(source, Iterable):
             self._populate_words_to_wordset(source)
+
         else:
             words = read_wordlist(self._default_wordlist_filename)
             self._populate_words_to_wordset(words)
 
     def _populate_words_to_wordset(self, words):
-        censor_words = [word.lower() for word in set(words)]
-        all_censor_words = []
-        for word in censor_words:
-            for leet_word in get_leet_combinations(word):
-                all_censor_words.append(leet_word)
-
-        all_censor_words.sort()
-        # The default wordlist takes ~5MB+ of memory
-        self.CENSOR_WORDSET = all_censor_words
+        for word in words:
+            if self.leet:
+                self.trie.add_words(get_leet_combinations(word.lower()))
+            else:
+                self.trie.add(word.lower())
 
     def construct_censor_regex(self):
         """Create compiled regex to match banned words"""
-        trie = LeetTrie()
-        trie.add_words(self.CENSOR_WORDSET)
-        return re.compile(r"\b" + trie.pattern() + r"\b", re.IGNORECASE)
+        return re.compile(r"\b" + self.trie.pattern() + r"\b", re.IGNORECASE)
 
     def censor(self, text, censor_char="*"):
         """Replace the swear words in the text with `censor_char`."""
@@ -72,7 +70,7 @@ class Profanity:
         if not isinstance(censor_char, str):
             censor_char = str(censor_char)
 
-        if not self.CENSOR_WORDSET:
+        if not self.trie.data:
             self.load_censor_words()
 
         return self._hide_swear_words(text, censor_char, self.censor_regex)
@@ -86,3 +84,6 @@ class Profanity:
     def contains_profanity(self, text):
         """Return True if  the input text has any swear words."""
         return text != self.censor(text)
+
+    def list_censor_words(self):
+        return self.trie.words()
