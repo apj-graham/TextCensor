@@ -44,10 +44,10 @@ class TestProfanity(unittest.TestCase):
         file_path = utils.get_complete_path_of_file(
             r"../tests/data/small_word_list.txt"
         )
-        sut = Profanity(file_path)
+        sut = Profanity(file_path, leet_speak=True)
 
-        expected_banned_words = ["w*rd", "w0rd", "w@rd", "word"]
-        self.assertEqual(expected_banned_words, sut.CENSOR_WORDSET)
+        expected_banned_words = ['word', 'w*rd', 'w0rd', 'w@rd']
+        self.assertEqual(expected_banned_words, sut.list_censor_words())
 
     def test_load_censor_words_invalid_file(self):
         """List of words to be censored is populated with those from the provided iterable"""
@@ -58,32 +58,40 @@ class TestProfanity(unittest.TestCase):
     def test_load_censor_words_iterable(self):
         """List of words to be censored is populated with those from the provided iterable"""
         custom_bad_words = ["happy"]
-        sut = Profanity(custom_bad_words)
+        sut = Profanity(custom_bad_words, leet_speak=True)
 
-        expected_word_list = ["h*ppy", "h4ppy", "h@ppy", "happy"]
-        self.assertEqual(expected_word_list, sut.CENSOR_WORDSET)
+        expected_word_list = ['happy', 'h@ppy', 'h*ppy', 'h4ppy']
+        self.assertEqual(expected_word_list, sut.list_censor_words())
+
+    def test_load_censor_words_leet_speak(self):
+        """List of words to be censored is populated with those from the provided iterable"""
+        custom_bad_words = ["happy"]
+        sut = Profanity(custom_bad_words, leet_speak=False)
+
+        expected_word_list = ['happy']
+        self.assertEqual(expected_word_list, sut.list_censor_words())
 
     def test_load_censor_words_duplicates(self):
         """List of words to be censored is populated with those from the provided iterable"""
         custom_bad_words = ["happy", "happy"]
-        sut = Profanity(custom_bad_words)
+        sut = Profanity(custom_bad_words, leet_speak=True)
 
-        expected_word_list = ["h*ppy", "h4ppy", "h@ppy", "happy"]
-        self.assertEqual(expected_word_list, sut.CENSOR_WORDSET)
+        expected_word_list = ['happy', 'h@ppy', 'h*ppy', 'h4ppy']
+        self.assertEqual(expected_word_list, sut.list_censor_words())
 
     def test_load_censor_words_new_words_overwrite(self):
         """Loading new words overwrites existing word list"""
-        sut = Profanity(["happy"])
-        expected_word_list = ["h*ppy", "h4ppy", "h@ppy", "happy"]
-        self.assertEqual(sut.CENSOR_WORDSET, expected_word_list)
+        sut = Profanity(["happy"], leet_speak=True)
+        expected_word_list = ['happy', 'h@ppy', 'h*ppy', 'h4ppy']
+        self.assertEqual(expected_word_list, sut.list_censor_words())
 
         sut.load_censor_words(["mod"])
-        expected_word_list = ['m*d', 'm0d', 'm@d', 'mod']
-        self.assertEqual(sut.CENSOR_WORDSET, expected_word_list)
+        expected_word_list = ['mod', 'm*d', 'm0d', 'm@d']
+        self.assertEqual(expected_word_list, sut.list_censor_words())
 
     def test_construct_censor_regex(self):
         """For the given words, the regex pattern is comprised of those words(including variations)"""
-        sut = Profanity(["a", "b"])
+        sut = Profanity(["a", "b"], leet_speak=True)
         expected_regex_pattern = r"\b[\*4@ab]\b"
 
         self.assertEqual(expected_regex_pattern, sut.censor_regex.pattern)
@@ -120,7 +128,7 @@ class TestProfanity(unittest.TestCase):
 
     def test_censor_leet_speak(self):
         """Banned words with alternative letters are redacted in given text"""
-        sut = Profanity(["a", "test"])
+        sut = Profanity(["a", "test"], leet_speak=True)
         print(sut.censor_regex.pattern)
         text = "This is 4 t3$7"
 

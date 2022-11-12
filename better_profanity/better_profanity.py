@@ -52,6 +52,7 @@ class Profanity:
             self._populate_words_to_wordset(words)
 
     def _populate_words_to_wordset(self, words):
+        self.trie.data = {}
         for word in words:
             if self.leet:
                 self.trie.add_words(get_leet_combinations(word.lower()))
