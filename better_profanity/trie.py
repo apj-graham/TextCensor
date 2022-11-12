@@ -24,7 +24,8 @@ class Trie:
     def dump(self):
         return self.data
 
-    def quote(self, char):
+    @staticmethod
+    def quote(char):
         return re.escape(char)
 
     def _pattern(self, pData):

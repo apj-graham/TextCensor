@@ -20,7 +20,6 @@ def read_wordlist(filename: str):
             if row != "":
                 yield row
 
-
 def get_leet_combinations(word):
     """Get all combinations of leet character substitutions for a word
 
